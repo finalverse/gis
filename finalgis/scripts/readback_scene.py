@@ -72,7 +72,10 @@ def readback(endpoint,token_file,graph_id,version,expected_sha,source_fwd,valida
         if total>64*1024*1024:raise ValueError('Scene byte budget')
         (output/'received'/sha).write_bytes(raw)
         derived,bin_sha=bind_material(raw,materials[rep['material_id']]);derived_sha=digest(derived);(output/'objects'/derived_sha).write_bytes(derived)
-        sid='spatialdb-leaf-'+str(n)
+        # Re-publication retains earlier leaf provenance. Scope the new source
+        # identity to this immutable publication/representation, not loop order.
+        sid='spatialdb-leaf-'+digest((graph_id+':'+version+':'+rep['representation_id']).encode())[:40]
+        if any(s['id']==sid for s in fwd['sources']):raise ValueError('Published leaf source identity collision')
         fwd['sources'].append({'id':sid,'uri':f'urn:spatialdb:{graph_id}:{version}:{sha}','sha256':sha,'license':graph['provenance']['license'],'version':version,'classification':'derived','attribution':graph['provenance']['source']})
         asset=copy.deepcopy(original);asset.update(id=str(uuid.uuid5(uuid.UUID(fwd['definition_id']),rep['representation_id'])),sha256=derived_sha,bytes=len(derived),source_ids=original['source_ids']+[sid],classification='derived');assets.append(asset)
         maps.append({'cell_id':cell['cell_id'],'representation_id':rep['representation_id'],'received_sha256':sha,'derived_material_glb_sha256':derived_sha,'unchanged_binary_sha256':bin_sha,'material_id':rep['material_id'],'triangles':rep['triangle_count']})
