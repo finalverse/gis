@@ -1,0 +1,134 @@
+{
+  "schema": "finalgis.branding-evidence/1",
+  "date": "2026-11-20",
+  "repository": "https://github.com/finalverse/gis.git",
+  "baseline": "c1ba0725d3d27c3b2458a9559d923669541026d5",
+  "implementation_commit": "561f5b347582389c59b7293d3210e454371f866a",
+  "evidence_root": "/Users/wenyan/Finalverse/dev/finalgis-branding-20261120",
+  "evidence": [
+    {
+      "path": "native-configure.log",
+      "bytes": 1063,
+      "sha256": "2dee7975df5a03913a56c78e0a48a410ef98f2e2bb648fd82d1ac3f12f63e723"
+    },
+    {
+      "path": "native-build.log",
+      "bytes": 914,
+      "sha256": "ba78131dca46bb1cf890a16dfe3916eb1097f950ad5c3cea4f08a827ae4891aa"
+    },
+    {
+      "path": "native-tests.log",
+      "bytes": 471,
+      "sha256": "e3cc4c4856464bc5bcc4b0a2e92bb211fd9ae81d161402323761543900649dd3"
+    },
+    {
+      "path": "asan-configure.log",
+      "bytes": 1062,
+      "sha256": "ac7f4983989ce7164f593d0dce57ba70e30ca32cb06c22e9dbbea533e11dbce7"
+    },
+    {
+      "path": "asan-build.log",
+      "bytes": 914,
+      "sha256": "ba78131dca46bb1cf890a16dfe3916eb1097f950ad5c3cea4f08a827ae4891aa"
+    },
+    {
+      "path": "asan-tests.log",
+      "bytes": 470,
+      "sha256": "e66d348ba467024a666d47724a727b00a9afe0bfad9782d81ce03a6b5af667ac"
+    },
+    {
+      "path": "package-final.log",
+      "bytes": 1006,
+      "sha256": "4c128613b005d843e46d8d1734674d2f307b907a2830c4c0fbb927b7d59d4978"
+    },
+    {
+      "path": "final/FinalGIS-package.json",
+      "bytes": 1039,
+      "sha256": "e87b9abc2eedc9407002c75a0a13e8d433e5f014d2ad7b876baf3dbf219a5c62"
+    },
+    {
+      "path": "identity-tests-delivery.json",
+      "bytes": 341,
+      "sha256": "8f7bf77df067b0ccfc798a827239c6dccf224fd226677efceb18e6aa3601b664"
+    },
+    {
+      "path": "identity-tests-delivery.log",
+      "bytes": 354,
+      "sha256": "d6c17e8892d5590030ba1cf35595ec2ab6e63267bb03387e25c783b27a50c026"
+    },
+    {
+      "path": "gis-integration-final.json",
+      "bytes": 696,
+      "sha256": "97d26e81e9d1733832ddf0ecf61fba43b04a5ef05bc6d2c5edb5c71cc4a6eea5"
+    },
+    {
+      "path": "gis-integration-final.log",
+      "bytes": 697,
+      "sha256": "cb8a0dc243d9f122d9ae499bb2c26a602280a340c9f37677a170e27067253bad"
+    },
+    {
+      "path": "product-source-parity.json",
+      "bytes": 796,
+      "sha256": "fb9d85d79c293e8b63aa186833140b24d26e02874c4b4bdc6ba53b7065519b3f"
+    },
+    {
+      "path": "launcher-isolation.json",
+      "bytes": 115,
+      "sha256": "b064266bf0174193cba3bb787b4799444ce4d5d88f88320925bcf821043021f4"
+    },
+    {
+      "path": "signature-verification.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cleanup.json",
+      "bytes": 378,
+      "sha256": "8cc78e7be15ecdd5d80030af0184321bd8e9faff75893d96651ee0cdceb45f63"
+    },
+    {
+      "path": "cleanup-viewer-compiler-cache.json",
+      "bytes": 360,
+      "sha256": "e60ad8e0c29201928b34fb0816007742784375f5a24d7fa10f5316c97d86926f"
+    },
+    {
+      "path": "FinalGIS-branding-smoke.qgz",
+      "bytes": 12445,
+      "sha256": "78d3b0e6a200e4f0f91f0799531c09e3b325ae8c412cc0651b7e8c100ceb1022"
+    }
+  ],
+  "actual_gui_observations": [
+    "FinalGIS app menu/title/About/welcome",
+    "retained QGIS credits/license dialog",
+    "FinalGIS Help and QGIS Foundation grouping",
+    "all three FinalGIS restart-required labels",
+    "local vector map in EPSG:2950",
+    "native 3D plane/map rendering",
+    "own QGZ save and final-package reopen",
+    "default and Night Mapping readability"
+  ],
+  "gui_saved_project_layers": [
+    {
+      "name": "Montr\u00e9al \u00b7 verified road centerlines",
+      "provider": "ogr"
+    },
+    {
+      "name": "Montr\u00e9al \u00b7 verified roof outlines",
+      "provider": "ogr"
+    },
+    {
+      "name": "NRCan \u00b7 terrain elevation (CGVD2013)",
+      "provider": "gdal"
+    }
+  ],
+  "application": "/Users/wenyan/Finalverse/dev/finalgis-branding-20261120/final/FinalGIS.app",
+  "upstream_engine_instruction_sections_preserved": true,
+  "native_worker_release_tests": "3/3",
+  "native_worker_asan_ubsan_tests": "3/3",
+  "qgis_integration_checks": "6 passed",
+  "qt_identity_contracts": "PASS",
+  "full_source_engine_build": false,
+  "cross_platform_builds_verified": false,
+  "notarized_or_portable_release": false,
+  "push_merge_deploy": false
+}
