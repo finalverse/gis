@@ -12,16 +12,20 @@ class FinalGISWorkspace:
         self.iface=iface; self.process=None; self.plan=None; self.layers=[]; self.buffer=b''
         self.root=pathlib.Path(__file__).parent
         self.config=json.loads(pathlib.Path(os.environ['FINALGIS_CONFIG']).read_text())
+        if self.config.get('bundle_relative'):
+            resource=pathlib.Path(os.environ['FINALGIS_CONFIG']).parent
+            self.config['worker']=str(resource/'native/finalgis-worker')
+            self.config['source']=str(resource/'data/montreal')
         self.original_title=iface.mainWindow().windowTitle()
     def initGui(self):
-        self.action=QAction(QIcon(str(self.root/'logo.svg')),'FinalGIS World Engineering',self.iface.mainWindow())
+        self.action=QAction(QIcon(str(self.root/'logo.png')),'FinalGIS World Engineering',self.iface.mainWindow())
         self.action.triggered.connect(self.show);self.iface.addPluginToMenu('FinalGIS',self.action)
         self.iface.addToolBarIcon(self.action)
-        self.about=QAction('About FinalGIS',self.iface.mainWindow());self.about.triggered.connect(self.show_about)
+        self.about=QAction('About FinalGIS',self.iface.mainWindow());self.about.setMenuRole(QAction.MenuRole.NoRole);self.about.triggered.connect(self.show_about)
         self.iface.addPluginToMenu('FinalGIS',self.about)
         self.dock=QDockWidget('FinalGIS · World Engineering',self.iface.mainWindow());self.dock.setObjectName('FinalGISWorkspace')
         widget=QWidget();layout=QVBoxLayout(widget)
-        title=QLabel('FinalGIS\nGeographic Intelligence\nfor Living Worlds')
+        title=QLabel('FinalGIS\nGeographic Intelligence\n& World Creation')
         title.setWordWrap(True);title.setMinimumHeight(96);title.setMaximumHeight(120)
         title.setStyleSheet('QLabel{background:#123d44;color:#e5f9ee;padding:12px;font-size:16px;font-weight:600;}')
         layout.addWidget(title)
@@ -46,15 +50,15 @@ class FinalGISWorkspace:
         scroll=QScrollArea();scroll.setWidgetResizable(True);scroll.setWidget(widget)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.dock.setMinimumWidth(380);self.dock.setWidget(scroll);self.iface.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea,self.dock)
-        self.iface.mainWindow().setWindowIcon(QIcon(str(self.root/'logo.svg')))
-        self.title_timer=QTimer(self.dock);self.title_timer.timeout.connect(self.set_title);self.title_timer.start(1200)
-        self.set_title();self.mode_changed(0)
-    def set_title(self):self.iface.mainWindow().setWindowTitle('FinalGIS — Geographic Intelligence for Living Worlds · QGIS '+Qgis.QGIS_VERSION)
+        self.iface.mainWindow().setWindowIcon(QIcon(str(self.root/'logo.png')))
+        from .identity import ProductIdentity
+        self.identity=ProductIdentity(self);self.identity.install()
+        self.mode_changed(0)
     def show(self):self.dock.show();self.dock.raise_()
     def mode_changed(self, index):
         for w in [self.prompt,self.provider,self.make,self.review,self.execute,self.cancel]:w.setVisible(index==1)
         self.professional.setEnabled(index!=0);self.agentic.setEnabled(index!=1)
-    def show_about(self):QMessageBox.information(self.iface.mainWindow(),'About FinalGIS','FinalGIS 0.1.0\nAI-Native Geographic Intelligence for Living Worlds\n\nQGIS '+Qgis.QGIS_VERSION+' — © QGIS contributors. GPL-2.0-or-later.\nThis supported product extension preserves QGIS providers, processing, plugins and file formats.\nNative geographic worker: GDAL / PROJ / GEOS.\nhttps://github.com/finalverse/FinalGIS')
+    def show_about(self):self.identity.show_about()
     def load_layers(self):
         if self.layers:return
         source=pathlib.Path(self.config['source'])
@@ -114,5 +118,5 @@ class FinalGISWorkspace:
     def cancel_work(self):
         if self.process:self.process.kill();self.status.setText('Cancellation requested; incomplete output is not published.')
     def unload(self):
-        self.cancel_work();self.title_timer.stop();self.iface.removePluginMenu('FinalGIS',self.action);self.iface.removePluginMenu('FinalGIS',self.about)
+        self.cancel_work();self.identity.uninstall();self.iface.removePluginMenu('FinalGIS',self.action);self.iface.removePluginMenu('FinalGIS',self.about)
         self.iface.removeToolBarIcon(self.action);self.iface.removeDockWidget(self.dock);self.iface.mainWindow().setWindowTitle(self.original_title)

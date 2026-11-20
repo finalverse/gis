@@ -1,0 +1,7 @@
+{
+  "product_name": "FinalGIS",
+  "file_description": "FinalGIS Geographic Intelligence & World Creation",
+  "publisher": "Finalverse",
+  "foundation_attribution": "Based on QGIS; copyright QGIS contributors, GPL-2.0-or-later",
+  "status": "metadata proposal only; Windows build and installer not verified"
+}

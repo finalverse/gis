@@ -1,3 +1,5 @@
+> Historical Ω-XIII / product0.1 evidence. Current product0.2 branding, packaging and limits are documented in [the FinalGIS acceptance report](../../docs/finalgis/ACCEPTANCE.md).
+
 # Source and runtime audit
 
 Preserved repository: finalverse/FinalGIS, original origin/master e35c88781a9baff59081dafd2a92dad969d87a6b. This is complete QGIS development source (CMake version4.3). Original history, AGENTS.md, COPYRIGHT/COPYING and symbols stay intact. Product changes live under finalgis/. Plugin-first integration was selected over subtree duplication, symbol renaming or a large downstream patchset.

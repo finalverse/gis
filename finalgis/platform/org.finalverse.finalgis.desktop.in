@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=FinalGIS
+GenericName=Geographic Information System
+Comment=Geographic Intelligence & World Creation — based on QGIS
+Exec=finalgis %F
+Icon=org.finalverse.finalgis
+Categories=Education;Science;Geography;
+MimeType=application/x-qgis-project;application/x-qgis;

@@ -32,5 +32,14 @@
     "qt": "6.11.1",
     "language": "C++20 with C17 geographic ABI",
     "fwd_source_sha256": "e3bf61cf44559226933655180111fb747f88d4e89427acf07690cbff1ced8822"
+  },
+  "product_identity": {
+    "name": "FinalGIS",
+    "version": "0.2.0",
+    "repository": "https://github.com/finalverse/gis.git",
+    "desktop_foundation": "contained pinned prebuilt QGIS3.44.15",
+    "native_bootstrap": "C17; macOS arm64 tested",
+    "engine_signature": "local ad-hoc regenerated; original instruction sections verified",
+    "source_engine_rebuilt": false
   }
 }
