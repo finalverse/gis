@@ -35,11 +35,17 @@
   },
   "product_identity": {
     "name": "FinalGIS",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "repository": "https://github.com/finalverse/gis.git",
     "desktop_foundation": "contained pinned prebuilt QGIS3.44.15",
     "native_bootstrap": "C17; macOS arm64 tested",
     "engine_signature": "local ad-hoc regenerated; original instruction sections verified",
     "source_engine_rebuilt": false
+  },
+  "geographic_workflow": {
+    "plan_schema": "finalgis.geographic-plan/2",
+    "tool_schema": "finalgis.gis-tools/1",
+    "executor_profile": "finalgis.native-scene/0.2-normals",
+    "scope": "bounded Montreal composite; six operations; standalone expansion deferred"
   }
 }

@@ -1,7 +1,7 @@
 [general]
 name=FinalGIS
 description=Geographic Intelligence for Living Worlds — bounded native GIS and reviewed world engineering
-version=0.2.0
+version=0.3.0
 qgisMinimumVersion=3.44
 qgisMaximumVersion=4.99
 author=Finalverse

@@ -1,6 +1,6 @@
 """Supported PyQGIS product layer; all geographic execution stays native."""
 import json, os, pathlib, tempfile, time
-from qgis.PyQt.QtCore import Qt, QProcess, QTimer
+from qgis.PyQt.QtCore import Qt, QProcess, QTimer, QProcessEnvironment
 from qgis.PyQt.QtGui import QAction, QIcon
 from qgis.PyQt.QtWidgets import (QDockWidget, QWidget, QVBoxLayout, QLabel, QPlainTextEdit,
     QPushButton, QHBoxLayout, QComboBox, QMessageBox, QScrollArea)
@@ -16,6 +16,7 @@ class FinalGISWorkspace:
             resource=pathlib.Path(os.environ['FINALGIS_CONFIG']).parent
             self.config['worker']=str(resource/'native/finalgis-worker')
             self.config['source']=str(resource/'data/montreal')
+        self.last_output=None
         self.original_title=iface.mainWindow().windowTitle()
     def initGui(self):
         self.action=QAction(QIcon(str(self.root/'logo.png')),'FinalGIS World Engineering',self.iface.mainWindow())
@@ -45,6 +46,7 @@ class FinalGISWorkspace:
         row=QHBoxLayout();self.execute=QPushButton('Approve & generate export');self.execute.setEnabled(False);self.execute.clicked.connect(self.execute_plan)
         self.cancel=QPushButton('Cancel');self.cancel.setEnabled(False);self.cancel.clicked.connect(self.cancel_work)
         row.addWidget(self.execute);row.addWidget(self.cancel);layout.addLayout(row)
+        self.publish=QPushButton('Publish reviewed geographic scene');self.publish.setEnabled(False);self.publish.setToolTip('Requires an operator-configured local publication adapter; never mutates a living world.');self.publish.clicked.connect(self.publish_scene);layout.addWidget(self.publish)
         note=QLabel('Generated 12 m building heights, colors and road widths are estimates.\nExport does not change the living world. Forge and MutSea authorize publication and interaction separately.')
         note.setWordWrap(True);layout.addWidget(note)
         scroll=QScrollArea();scroll.setWidgetResizable(True);scroll.setWidget(widget)
@@ -75,10 +77,14 @@ class FinalGISWorkspace:
         from qgis.core import QgsRectangle
         self.iface.mapCanvas().setExtent(QgsRectangle(300489.3349,5040679.3075,300749.3349,5040939.3075));self.iface.mapCanvas().refresh()
         self.status.setText('Loaded: 45 roof outlines · 93 road centerlines\nSources validated by native worker before generation.\nWorking CRS: EPSG:2950 / metres; elevation CGVD2013.')
-    def launch(self,args,finished):
+    def launch(self,args,finished,program=None):
         if self.process: return
         self.buffer=b'';process=QProcess(self.dock);self.process=process
-        process.setProgram(self.config['worker']);process.setArguments(args)
+        process.setProgram(program or self.config['worker']);process.setArguments(args)
+        if program:
+            environment=QProcessEnvironment.systemEnvironment()
+            for key in ['PYTHONHOME','PYTHONPATH']:environment.remove(key)
+            process.setProcessEnvironment(environment)
         self.make.setEnabled(False);self.execute.setEnabled(False);self.cancel.setEnabled(True)
         def collect():
             self.buffer+=bytes(process.readAllStandardOutput())
@@ -96,10 +102,10 @@ class FinalGISWorkspace:
         process.start()
         QTimer.singleShot(60000,lambda:process.kill() if self.process is process else None)
     def make_plan(self):
-        self.plan=None;self.execute.setEnabled(False)
+        self.plan=None;self.execute.setEnabled(False);self.publish.setEnabled(False)
         provider=['mock','ollama','ollama'][self.provider.currentIndex()]
         model=['','qwen2.5:0.5b','gemma4:e4b'][self.provider.currentIndex()]
-        args=['plan','--request',self.prompt.toPlainText()[:2048],'--provider',provider]
+        args=['workflow-plan','--source',self.config['source'],'--request',self.prompt.toPlainText()[:2048],'--provider',provider]
         if model:args+=['--model',model]
         def ready(result):
             self.plan=result;self.review.setPlainText(json.dumps(result,indent=2,ensure_ascii=False));self.execute.setEnabled(True)
@@ -111,10 +117,24 @@ class FinalGISWorkspace:
         with os.fdopen(fd,'w') as f:json.dump(self.plan,f)
         output=root/('montreal-'+time.strftime('%Y%m%d-%H%M%S')+'-'+str(time.monotonic_ns()))
         def complete(result):
+            self.last_output=output;self.publish.setEnabled(bool(self.config.get('publication_adapter')))
             pathlib.Path(p).unlink(missing_ok=True)
             self.review.setPlainText('Export completed\n'+str(output)+'\n\n'+json.dumps({'geometry':result['asset'],'timings_ms':result['timings_ms'],'provenance':result['accuracy_note'],'publication':result['publication']},indent=2))
             self.status.setText('Generated: 17 building proxies · 41 road segments\nVerified GLB export; living-world state unchanged.')
-        self.launch(['run','--source',self.config['source'],'--output',str(output),'--plan',p,'--approve'],complete)
+        self.launch(['workflow-run','--source',self.config['source'],'--output',str(output),'--plan',p,'--approved-plan',self.plan['plan_id'],'--approve'],complete)
+    def publish_scene(self):
+        if self.process or not self.last_output or not self.plan:return
+        required=['publication_adapter','publication_config','publication_core','publication_outputs','publication_fixture_prefix','workflow_python']
+        if any(not self.config.get(k) for k in required):
+            self.review.setPlainText('Publication is not configured. The generated scene remains a local export.');return
+        question='Publish this exact reviewed local scene through Forge and SpatialDB?\nPlan: '+self.plan['plan_id']+'\nNo living-world mutation is authorized by this action.'
+        if QMessageBox.question(self.iface.mainWindow(),'Review geographic publication',question,QMessageBox.Yes|QMessageBox.No)!=QMessageBox.Yes:return
+        job=str(time.monotonic_ns());out=pathlib.Path(self.config['publication_outputs'])/job
+        args=[self.config['publication_adapter'],'--config',self.config['publication_config'],'--scene',str(self.last_output),'--out',str(out),'--fixture',self.config['publication_fixture_prefix']+job,'--core',self.config['publication_core'],'--approved-plan',self.plan['plan_id']]
+        self.publish.setEnabled(False);self.status.setText('Publishing the reviewed geographic scene…')
+        def published(result):
+            self.review.setPlainText(json.dumps(result,indent=2));self.status.setText('Publication '+result['stage']+' · world state unchanged.')
+        self.launch(args,published,self.config['workflow_python'])
     def cancel_work(self):
         if self.process:self.process.kill();self.status.setText('Cancellation requested; incomplete output is not published.')
     def unload(self):

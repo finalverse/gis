@@ -21,7 +21,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 NAME = "FinalGIS"
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 POSITIONING = "AI-Native Geographic Intelligence & World Creation"
 ATTRIBUTION = (
     "Based on the open-source QGIS project. An independent Finalverse derivative."

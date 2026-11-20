@@ -22,7 +22,13 @@ int main(int argc,char **argv) {
   const auto required=[&](const char *k){const auto v=get(k);if(v.isEmpty())fgis::fail(QString("Missing ")+k);return v;};
   QJsonObject result;
   const auto command=args[1];
-  if(command=="inspect") result=fgis::inspect(required("--source"));
+  if(command=="tool-registry") result=fgis::toolRegistry();
+  else if(command=="workflow-plan") result=fgis::workflowPlan(required("--source"),fgis::modelPlan(required("--request"),get("--provider","mock"),get("--model","qwen2.5:0.5b"),get("--endpoint","http://127.0.0.1:11434"),get("--key-file"),options.contains("--allow-remote")));
+  else if(command=="workflow-run") {
+   if(!options.contains("--approve"))fgis::fail("Explicit local execution approval required");
+   result=fgis::workflowRun(required("--source"),required("--output"),fgis::object(fgis::read(required("--plan"),65536)),required("--approved-plan"));
+  }
+  else if(command=="inspect") result=fgis::inspect(required("--source"));
   else if(command=="models") result=fgis::discover(get("--endpoint","http://127.0.0.1:11434"),options.contains("--allow-remote"));
   else if(command=="plan") result=fgis::modelPlan(required("--request"),get("--provider","mock"),get("--model","qwen2.5:0.5b"),get("--endpoint","http://127.0.0.1:11434"),get("--key-file"),options.contains("--allow-remote"));
   else if(command=="run") {

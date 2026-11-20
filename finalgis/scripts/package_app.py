@@ -47,6 +47,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ["qgis", "worker", "source", "output", "profile"]:
         p.add_argument("--" + name, type=pathlib.Path, required=True)
+    p.add_argument("--workflow-config", type=pathlib.Path)
     a = p.parse_args()
     os.umask(0o077)
     product = pathlib.Path(__file__).resolve().parents[1]
@@ -64,6 +65,13 @@ def main():
     original = foundation / "Contents/MacOS" / info["CFBundleExecutable"]
     if not original.is_file() or not worker.is_file():
         raise ValueError("Native foundation and built FinalGIS worker required")
+    registry = json.loads(
+        subprocess.check_output([str(worker), "tool-registry"], timeout=10)
+    )
+    if registry.get("schema") != "finalgis.gis-tools/1":
+        raise ValueError(
+            "This product module requires the native geographic workflow worker"
+        )
     app.parent.mkdir(parents=True, exist_ok=True)
     profile.mkdir(parents=True, mode=0o700)
     run(["cp", "-cR", foundation, app])
@@ -114,10 +122,31 @@ def main():
             {
                 "bundle_relative": True,
                 "outputs": str(profile / "exports"),
-                "package_version": "0.2.0",
+                "package_version": "0.3.0",
             }
         )
     )
+    if a.workflow_config:
+        overrides = json.loads(a.workflow_config.read_text())
+        permitted = {
+            "publication_adapter",
+            "publication_config",
+            "publication_core",
+            "publication_outputs",
+            "publication_fixture_prefix",
+            "workflow_python",
+        }
+        if set(overrides) != permitted or any(
+            not isinstance(v, str) or not pathlib.Path(v).is_absolute()
+            for v in overrides.values()
+        ):
+            raise ValueError(
+                "Trusted workflow config requires exact absolute-path fields"
+            )
+        cfgpath = resources / "finalgis-config.json"
+        cfg = json.loads(cfgpath.read_text())
+        cfg.update(overrides)
+        cfgpath.write_text(json.dumps(cfg))
     (resources / "notices").mkdir()
     shutil.copy2(product.parent / "COPYING", resources / "notices/COPYING")
     shutil.copy2(
@@ -149,9 +178,9 @@ def main():
         CFBundleDisplayName="FinalGIS",
         CFBundleIdentifier="org.finalverse.finalgis",
         CFBundleExecutable="FinalGIS",
-        CFBundleShortVersionString="0.2.0",
-        CFBundleVersion="2",
-        CFBundleGetInfoString="FinalGIS 0.2.0 — based on QGIS 3.44.15 LTR",
+        CFBundleShortVersionString="0.3.0",
+        CFBundleVersion="3",
+        CFBundleGetInfoString="FinalGIS 0.3.0 — based on QGIS 3.44.15 LTR",
         CFBundleIconFile="FinalGIS.icns",
         NSHumanReadableCopyright="FinalGIS product layer © Finalverse. Based on QGIS © QGIS contributors, GPL-2.0-or-later.",
     )
@@ -212,7 +241,7 @@ def main():
         "application": str(app),
         "foundation": str(foundation),
         "foundation_version": "3.44.15",
-        "version": "0.2.0",
+        "version": "0.3.0",
         "profile": str(profile),
         "engine_sha256": sha(engine),
         "engine_original_sha256": original_sha,
