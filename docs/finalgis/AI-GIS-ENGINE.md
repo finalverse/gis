@@ -1,0 +1,9 @@
+# Native AI GIS engine
+
+The existing C++ Ollama/OpenAI-compatible model adapter remains provider-neutral. New workflow-plan requires actual validated_model_recipe for a real provider; a provider failure or unsupported/malformed choice cannot masquerade as an AI success. Explicit mock mode remains separate, and legacy plan fallback behavior is preserved for compatibility. Actual local qwen2.5:0.5b produced the final structured plan; other remote providers were not called.
+
+Every v2 plan includes content-derived plan/request identities, provider/model, tool schema, fixed operation sequence, content-pinned dataset references, CRS/units/vertical datum, output declarations, fixed execution constraints, executor version, authorization scope and original native model receipt. Native validation rejects unknown fields/tools, changed inputs, spoofed authority, changed units/datums/CRS/budgets and stale plan identities. Approval must name the exact plan digest plus --approve. This is an owner-local artifact contract, not a signed remote attestation.
+
+The accepted recipe remains deliberately bounded: a260m Montréal area,2.5m illustrative road buffers,33×33 terrain and synthetic12m massing. It is not a general autonomous GIS agent. The model does not select arbitrary coordinates, SQL, paths or code. The host controls process cancellation/deadline; CLI callers must impose the declared60s timeout. GUI source now calls the v2 commands; packaged desktop behavior has not received a new foreground review.
+
+Desktop0.3 was assembled from the preserved branding foundation with the upgraded native worker. A second-review publication button is source-wired to the real adapter through exact operator-owned absolute-path configuration; it stays disabled when unconfigured. Foreground validation of these new controls is pending. No model can select the executable/configuration paths or self-approve publication.

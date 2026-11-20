@@ -1,0 +1,7 @@
+# Security and authority
+
+Models select an existing recipe, not arbitrary code/paths/SQL or owner grants. Native v2 root fields, operation literals, dataset digest, CRS/units/datum, limits and exact reviewed plan digest are checked. Provider failure/malformed output cannot count as real AI success. Legacy fallback stays only in the compatibility CLI. Input/response/geometry and host process limits remain explicit; these are bounded local workloads, not OS hard-quota guarantees.
+
+Publication and map configuration are trusted operator-owned executable configuration; this is not a hostile remote orchestration API. Map requests cannot select filesystem paths, arbitrary layers or CGI options. The loopback bearer token is private and never committed. Cache keys bind normalized requests and dataset content; service restarts regenerate credentials. PNG bodies are preserved byte-for-byte rather than newline-normalized with CGI headers.
+
+No new FVP wire protocol or cryptographic primitive was created. Existing C17 SDK/FVP reads compose with the unchanged Runtime. SpatialDB/Forge output is not permission to mutate a world. Only the separate existing owner path is used for a static reference in a new disposable copy. Original accepted data hashes remain intact. Production HTTPS, remote identity/authorization, full resource quotas and adversarial same-UID process isolation remain unverified.

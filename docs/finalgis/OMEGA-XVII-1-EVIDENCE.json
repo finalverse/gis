@@ -1,0 +1,125 @@
+{
+  "schema": "finalgis.omega-xvii-1-evidence/1",
+  "implementation_commit": "c3e18debaba9b585e61a785c491d3b73eddc56d4",
+  "evidence_root": "/Users/wenyan/Finalverse/dev/finalgis-ai-20261120",
+  "items": [
+    {
+      "path": "repository-audit.json",
+      "bytes": 8819,
+      "sha256": "535d4f59528df35b913f9ee90290d1b7b2951820486c71977b94e827e6c52011"
+    },
+    {
+      "path": "branding-handoff-verification.json",
+      "bytes": 170,
+      "sha256": "7ea36ef36ee298ddd523da4d0991599f18f296a88d40bb9d9b63ca7cc6256093"
+    },
+    {
+      "path": "final-plan.json",
+      "bytes": 2440,
+      "sha256": "a955ee5ceafae33fe3f17d23ed4aef65f8c446bb4c5a39fb360ce5f1f42907e7"
+    },
+    {
+      "path": "final-execution.json",
+      "bytes": 13783,
+      "sha256": "14d7120c84f318fb90497a1df7e22112070e04d8c442765bda81e92e7f0b2246"
+    },
+    {
+      "path": "normal-geometry-preservation.json",
+      "bytes": 196,
+      "sha256": "884fffade8cabc6eb464360d5d4164f59c8cd56d2cde98d148c50f2093cd1a72"
+    },
+    {
+      "path": "final-tests.log",
+      "bytes": 561,
+      "sha256": "f1086449c525dc05a59e44c444e8a62128f029dbbd90e2e3e9e5bacd18087771"
+    },
+    {
+      "path": "final-asan-tests.log",
+      "bytes": 560,
+      "sha256": "42a07df38a00bdcec138619d7161971f6de202c63f637392d30c48ae4be514fd"
+    },
+    {
+      "path": "final-publication/state.json",
+      "bytes": 1031,
+      "sha256": "578f09994ad9ccd75781315fe83c239f185f21081976e14674d90b9ab931c521"
+    },
+    {
+      "path": "final-publication/publication/publication.json",
+      "bytes": 428,
+      "sha256": "90ee64052cb9f9509f2e633d5b0af875af71ba0e11f806604ff2b9a433906d4b"
+    },
+    {
+      "path": "final-publication/publication/access-denials.json",
+      "bytes": 37,
+      "sha256": "3ff09c9f5943cd76d01627add6cb27e8ce495cd1b3c6d9ecd8f1b3fd741d37f6"
+    },
+    {
+      "path": "final-publication/publication/readback.json",
+      "bytes": 2250,
+      "sha256": "cac550711f55ad282e80946097e990e7450f07d885a5f086b7270e06427b1c01"
+    },
+    {
+      "path": "final-publication/publication/restart-readback.json",
+      "bytes": 2239,
+      "sha256": "a394e1ad41ac8709f065111aba1cdabd8891e7c74a0cec6f1a2bbca8679b5fa9"
+    },
+    {
+      "path": "publication-retry-final.log",
+      "bytes": 959,
+      "sha256": "6dfc079be2e6be9b9eaf099fa72263009b36d18ed6a0fa3776435092db91736a"
+    },
+    {
+      "path": "mapserver-build-receipt.json",
+      "bytes": 677,
+      "sha256": "17d60467cfe605cae1fc6b5ad47e8d8d1a2fb753e3b367c5e6a24eafab1f7aff"
+    },
+    {
+      "path": "map-tests.json",
+      "bytes": 623,
+      "sha256": "fb07070b24d004b4cee65d3df6cb38e48df27a5c8e32f80e6d5549b223bd932c"
+    },
+    {
+      "path": "map-test-0/preview.png",
+      "bytes": 81633,
+      "sha256": "294c0d1617d7c092b6f67d120bb020d5d0c96489531cc27d13dd50feb3f25e37"
+    },
+    {
+      "path": "map-test-1/preview.png",
+      "bytes": 81633,
+      "sha256": "294c0d1617d7c092b6f67d120bb020d5d0c96489531cc27d13dd50feb3f25e37"
+    },
+    {
+      "path": "render/receipt.json",
+      "bytes": 369,
+      "sha256": "cba44ad2b960dc512570febd83150ee187e7be797c80a4c1727458aa135ea950"
+    },
+    {
+      "path": "render/frame.json",
+      "bytes": 671,
+      "sha256": "2babb1dd35148ea44738c70281b3c726991b6653381e973aaa792866d3135dee"
+    },
+    {
+      "path": "viewer-world2/preparation.json",
+      "bytes": 417,
+      "sha256": "fda2ba5a2646707818ba0a4e9867493106d2c0af95391969e494285d009a5796"
+    },
+    {
+      "path": "viewer-world2/registered/receipt.json",
+      "bytes": 3067,
+      "sha256": "7f0019726ce8fba4dcd1d2326b09ac16fae394de0ddaeb6bce7d1bfe7d05ce34"
+    },
+    {
+      "path": "viewer-pilot/frames/frame.json",
+      "bytes": 1647,
+      "sha256": "73bffdd6095dc19e06bb6889263dba4a5ce853b72e434725fc60ae4139a5c759"
+    },
+    {
+      "path": "desktop-package.log",
+      "bytes": 990,
+      "sha256": "bae26f9f6eea3d4a812af463da68e15eddf5dce73a76a33b1e58be16f8868801"
+    }
+  ],
+  "desktop_navigation_passed": false,
+  "new_desktop_workflow_foreground_passed": false,
+  "native_pipeline_passed": true
+}
