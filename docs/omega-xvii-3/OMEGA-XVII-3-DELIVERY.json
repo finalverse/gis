@@ -1,0 +1,176 @@
+{
+ "schema": "finalverse.omega-xvii-3-delivery/1",
+ "created_local": "2026-11-21T11:32:07+0800",
+ "status": "local engineering candidate: replication, native projection, FVP streaming, Map Server live worlds, Viewer/Storm live console, AI interaction and Montr\u00e9al Acts 1-12 executed; FinalGIS 4.2.3 build blocked on QCA (owner decision)",
+ "pushed_or_merged": false,
+ "repositories": {
+  "mutsea": {
+   "path": "/Users/wenyan/Finalverse/dev/worktrees/mutsea-omega-xvii-3-20261121",
+   "branch": "feat/omega-xvii-3-live-replication-20261121",
+   "head": "5b0ac8e8207627b53e78a2ee290a819fdee628a9",
+   "baseline": "b81f06205292a15ee8802256a74262c938440c1c",
+   "commits": [
+    "5b0ac8e8207627b53e78a2ee290a819fdee628a9 test(native): libFuzzer target for the live projection's frame intake",
+    "925974fe956a887943113223f4c24c91c88720eb feat(cli): mutsea live-bench for durable authorized-move throughput",
+    "7b7e865a2fd821bba4be0032ab74cccefd1a9135 feat(native): mutsea_replica live projection fed by the replication stream",
+    "bd56e4504e593c443351272c50a6e3294cb6f9dc feat(cli): mutsea live / live-act / live-follow for serving an existing store live",
+    "fd6a33df5be5d3c7f18e5c848e4ff9f93d56d955 feat(replication): durable commit-coupled live replication over FVP domain 3"
+   ],
+   "clean": true
+  },
+  "mapserver_fork": {
+   "path": "/Users/wenyan/Finalverse/dev/worktrees/mapserver-omega-xvii-3-20261121",
+   "branch": "feat/omega-xvii-3-map-live-world-20261121",
+   "head": "6b2e0f4215468e7f4e390752890d41ebb96521e7",
+   "baseline": "5aab5312fc85c55b19a3dec41d7c7c464d8f94d5",
+   "commits": [
+    "6b2e0f4215468e7f4e390752890d41ebb96521e7 feat(finalverse): live MutSea worlds in the Map Server (read-only replication subscriber)"
+   ],
+   "clean": true
+  },
+  "finalgis": {
+   "path": "/Users/wenyan/Finalverse/dev/worktrees/finalgis-ai-20261120",
+   "branch": "feat/omega-xvii-3-living-agent-20261121",
+   "head": "bc6b19311f669ab49e9f2984a5d306988396c638",
+   "baseline": "cd4166003b84ceba3147263b78df1e2b55ffd66e",
+   "commits": [
+    "bc6b19311f669ab49e9f2984a5d306988396c638 docs(omega-xvii-3): living world integration: replication, projection, FVP, map server, viewer, AI, registration, security, performance, demo and acceptance",
+    "8098f84aacf44dc969a121b459728094eb8dfcc0 feat(finalgis): \u03a9-XVII.3 living world agent: typed world plans, policy, deterministic execution"
+   ],
+   "clean": true
+  },
+  "viewer": {
+   "path": "/Users/wenyan/Finalverse/dev/worktrees/viewer-ai-world",
+   "branch": "feat/omega-xvii-3-living-viewer-20261121",
+   "head": "af8c47613aa76cea3fee672102aa4facca09dceb",
+   "baseline": "75ff4926a37b022f6bd77d74282e2551e72c4334",
+   "commits": [
+    "af8c47613aa76cea3fee672102aa4facca09dceb feat(viewer): \u03a9-XVII.3 Living World console on the live MutSea stream"
+   ],
+   "clean": true
+  }
+ },
+ "environment": {
+  "qt": "6.12.0 (all modules; upgraded by owner 2026-11-21 09:48)",
+  "brew_installed": [
+   "gsl 2.8",
+   "qscintilla2 2.14.1_7 (fontconfig 2.18.3->2.18.4)"
+  ],
+  "disk_free_at_receipt": "12Gi"
+ },
+ "build_commands": {
+  "mutsea_rust": "CARGO_TARGET_DIR=dev/omega-xvii-3-20261121/mutsea-target cargo build --release -p mutsea-cli; cargo test --workspace",
+  "mutsea_native": "cmake -S <mutsea worktree> -B native-build -DCMAKE_PREFIX_PATH='<core native-prefix>;/opt/homebrew' && cmake --build native-build && ctest",
+  "fvmapd": "cmake -S <mapserver worktree>/finalverse -B fvmap-live -DFVMAP_WITH_MUTSEA=ON -DCMAKE_PREFIX_PATH='native-prefix;<core prefix>;/opt/homebrew;<gw2 db-env>'",
+  "viewer": "cmake <build-darwin-universal> -DFINALVERSE_LIVE_PREFIX=dev/omega-xvii-3-20261121/live-prefix -DFINALVERSE_LIVE_PROJ_LIBDIR=<gw2 db-env>/lib; xcodebuild -project SecondLife.xcodeproj -configuration RelWithDebInfo ARCHS=arm64 -target secondlife-bin"
+ },
+ "test_results": {
+  "mutsea_cargo_workspace": "all pass; clippy clean; new tests/live.rs 6/6",
+  "native_ctest_release": "3/3",
+  "native_ctest_asan_ubsan": "3/3",
+  "live_replica_release": {
+   "1_differential": true,
+   "2_disconnects": true,
+   "3_crash_restart": true,
+   "4_authority_restart": true,
+   "5_refusal": true
+  },
+  "live_replica_asan_ubsan": {
+   "1_differential": true,
+   "2_disconnects": true,
+   "3_crash_restart": true,
+   "4_authority_restart": true,
+   "5_refusal": true
+  },
+  "verify_after": "VERIFY PASS: 3146 records replayed from genesis to digest 10f511559afecc8e8896eec840a97ebd2f8d0959d446ca6c3c64d5f9e46dd827",
+  "native_fuzz": "libFuzzer 1,277,556 runs / 121 s / 0 findings",
+  "fvmapd_regression": "73/73",
+  "fvmapd_live": "head live/current, nearby Elara 5.02 m; 503 world_not_current while authority down; 200 after restart",
+  "differential_mismatches": 0
+ },
+ "performance": {
+  "durable_ack_ms_single_client": {
+   "max": 149.686125,
+   "p50": 33.935792,
+   "p95": 50.172000000000004
+  },
+  "durable_cmds_per_s_8_clients": [
+   207.00333244806376,
+   139.39122971291332
+  ],
+  "commit_to_native_latency_light_ms": {
+   "last": 0.218,
+   "p50": 0.225,
+   "p95": 0.374,
+   "max": 1.18
+  },
+  "commit_to_native_latency_load": {
+   "last": 1.833,
+   "p50": 1.864,
+   "p95": 15.816,
+   "max": 86.31
+  },
+  "ai_plan_seconds": "13.9-19.3 (gemma4:e4b)",
+  "storm_frame": "64,215 triangles, 144 objects, OGRE Metal 1280x720"
+ },
+ "runtime_evidence": {
+  "montreal_demo": "/Users/wenyan/Finalverse/dev/omega-xvii-3-20261121/montreal-demo-evidence.json",
+  "acts": [
+   "act10_authority_down",
+   "act10_authority_restarted",
+   "act11_inspect_focus",
+   "act11_overview",
+   "act1_infrastructure",
+   "act2_geography",
+   "act3_residents",
+   "act4_compose",
+   "act5_ai_query",
+   "act6_7_moves_live",
+   "act8_disconnect_commits",
+   "act9_reconnect"
+  ],
+  "agent_records": "/Users/wenyan/Finalverse/dev/omega-xvii-3-20261121/run/agent-records.jsonl"
+ },
+ "screenshots": {
+  "act04-compose.png": "405507737b6cc13a9b144f98265ee545180d737ad96618ad311bd7fe4aeae6d6",
+  "act05-ai-query.png": "5630f54a395d41257d97dfcb64d43213acab1e03b2a940f30f0bbd18b53d392f",
+  "act07-live-moves.png": "0b474478848c88c03c9477a4b9abd87ccd315f24dd0d91d12677b1527aaa4fce",
+  "act07b-live-moves-settled.png": "19e0ce06ab13d8e9c8dc5a3fa8dd074d364ac8c227fa0a0aa9981a02fc16a418",
+  "act09-reconnected.png": "60ec2ed2342207e09787599400d0ad30c9aa58e55f8170ca42e543e425d5ab28",
+  "act10a-authority-down.png": "b6892a2d9f771b4dcc7b3aa81d642888abecc95cd3250b942d0cb860af255123",
+  "act10b-recovered.png": "97416f31e740ea2434b6825e9b0d21923c4ae48b044a05c45d3a6c0ff830e314",
+  "act11a-focus-auren.png": "5f145542eb1af00c183192502e88a57c69f37c7bd45a6bc1346fad658e6df958",
+  "act11b-overview.png": "e45b953547ffd427a117f419e219c51c41f385f08914fade5493e6b34be83494",
+  "before-viewer-xv.png": "31d60b740637ae8bdc902184ec2707c36c7a6b8955993295f66771ced4364860"
+ },
+ "artifacts": {
+  "mutsea": {
+   "path": "/Users/wenyan/Finalverse/dev/omega-xvii-3-20261121/mutsea-target/release/mutsea",
+   "sha256": "fb84206ee5161843f5b1fe4b6c97816005315a681204ec8dc464b85f553ed861"
+  },
+  "libmutsea_replica": {
+   "path": "/Users/wenyan/Finalverse/dev/omega-xvii-3-20261121/native-prefix/lib/libmutsea_replica.0.4.0.dylib",
+   "sha256": "5609304ce4862c8876deb9a899dbf594b8acbc29bafcd9e7480559af26cea80e"
+  },
+  "fvmapd": {
+   "path": "/Users/wenyan/Finalverse/dev/omega-xvii-3-20261121/fvmap-live/fvmapd",
+   "sha256": "91f92be72e6fa40cef9ce47650aef57b78ba664d6564d11d8a7f6194d205dd3d"
+  },
+  "viewer": {
+   "path": "/Users/wenyan/Finalverse/dev/worktrees/viewer-ai-world/build-darwin-universal/newview/RelWithDebInfo/Finalverse Preview.app/Contents/MacOS/Finalverse Preview",
+   "sha256": "97c2baab320bbe112ee6ab3502359e87ee3f62e89bb3f103439f061247b6481d"
+  }
+ },
+ "preserved": {
+  "earth_montreal_source_sha256": "cecf0d60f31c9eb85befac1e739f785c24fdcc65d7231bc4b58abb041397581f",
+  "stores_used": "copies only (mtl, accept1, accept2, fvmap-regress)"
+ },
+ "open_blockers": [
+  "FinalGIS 4.2.3 compile needs QCA: owner to choose private source build or brew install qca",
+  "3D ray picking and zero-copy Storm surface not implemented",
+  "replication transport has no TLS (loopback dev posture)",
+  "Core FVP registry entry for domain 3 schema 1.1"
+ ],
+ "rollback": "stop using the four feature branches and evidence binaries; \u03a9-XVII.2 branches/binaries untouched; brew uninstall qscintilla2 gsl",
+ "docs": "/Users/wenyan/Finalverse/dev/worktrees/finalgis-ai-20261120/docs/omega-xvii-3"
+}
