@@ -1,7 +1,7 @@
 {
  "schema": "finalverse.omega-xvii-3-delivery/1",
  "created_local": "2026-11-21T11:32:07+0800",
- "status": "local engineering candidate: replication, native projection, FVP streaming, Map Server live worlds, Viewer/Storm live console, AI interaction and Montr\u00e9al Acts 1-12 executed; FinalGIS 4.2.3 build blocked on QCA (owner decision)",
+ "status": "local engineering candidate: replication, native projection, FVP streaming, Map Server live worlds, Viewer/Storm live console, AI interaction and Montr\u00e9al Acts 1-12 executed; FinalGIS 4.2.3 builds against Qt 6.12 and launches without the reported crash (not yet packaged/branded)",
  "pushed_or_merged": false,
  "repositories": {
   "mutsea": {
@@ -54,7 +54,8 @@
   "qt": "6.12.0 (all modules; upgraded by owner 2026-11-21 09:48)",
   "brew_installed": [
    "gsl 2.8",
-   "qscintilla2 2.14.1_7 (fontconfig 2.18.3->2.18.4)"
+   "qscintilla2 2.14.1_7 (fontconfig 2.18.3->2.18.4)",
+   "qca 2.3.12_2 (installed by the owner)"
   ],
   "disk_free_at_receipt": "12Gi"
  },
@@ -86,7 +87,14 @@
   "native_fuzz": "libFuzzer 1,277,556 runs / 121 s / 0 findings",
   "fvmapd_regression": "73/73",
   "fvmapd_live": "head live/current, nearby Elara 5.02 m; 503 world_not_current while authority down; 200 after restart",
-  "differential_mismatches": 0
+  "differential_mismatches": 0,
+  "finalgis_4_2_3": {
+   "build": "2375/2375, 0 failed",
+   "qgis_process_version": "4.2.3 Bel\u00e9m do Par\u00e1, Qt 6.12.0",
+   "buffer_montreal_buildings": "45/45 features",
+   "desktop_launch": "main window reached, no crash, no DiagnosticReport",
+   "screenshot": "shots/qgis-4.2.3-launch.png"
+  }
  },
  "performance": {
   "durable_ack_ms_single_client": {
@@ -141,7 +149,8 @@
   "act10b-recovered.png": "97416f31e740ea2434b6825e9b0d21923c4ae48b044a05c45d3a6c0ff830e314",
   "act11a-focus-auren.png": "5f145542eb1af00c183192502e88a57c69f37c7bd45a6bc1346fad658e6df958",
   "act11b-overview.png": "e45b953547ffd427a117f419e219c51c41f385f08914fade5493e6b34be83494",
-  "before-viewer-xv.png": "31d60b740637ae8bdc902184ec2707c36c7a6b8955993295f66771ced4364860"
+  "before-viewer-xv.png": "31d60b740637ae8bdc902184ec2707c36c7a6b8955993295f66771ced4364860",
+  "qgis-4.2.3-launch.png": "cd6026cb8710938a0fed37ee8b61312122c6031aecad7931201275993661454e"
  },
  "artifacts": {
   "mutsea": {
@@ -166,11 +175,11 @@
   "stores_used": "copies only (mtl, accept1, accept2, fvmap-regress)"
  },
  "open_blockers": [
-  "FinalGIS 4.2.3 compile needs QCA: owner to choose private source build or brew install qca",
   "3D ray picking and zero-copy Storm surface not implemented",
   "replication transport has no TLS (loopback dev posture)",
-  "Core FVP registry entry for domain 3 schema 1.1"
+  "Core FVP registry entry for domain 3 schema 1.1",
+  "FinalGIS 4.2.3: Python bindings, branding, bundle and GIS compatibility suite before replacing the 3.44.15 app"
  ],
- "rollback": "stop using the four feature branches and evidence binaries; \u03a9-XVII.2 branches/binaries untouched; brew uninstall qscintilla2 gsl",
+ "rollback": "stop using the four feature branches and evidence binaries; \u03a9-XVII.2 branches/binaries untouched; brew uninstall qca qscintilla2 gsl",
  "docs": "/Users/wenyan/Finalverse/dev/worktrees/finalgis-ai-20261120/docs/omega-xvii-3"
 }
