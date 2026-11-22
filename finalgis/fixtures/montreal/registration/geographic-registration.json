@@ -1,0 +1,69 @@
+{
+  "schema": "finalverse.geographic-registration/0.2",
+  "world": "8699ab0c-8242-458e-b3db-4e39249b3c56",
+  "region": "b96ee246-06f6-496f-ad70-4ae73fb711dd",
+  "revision": 1,
+  "source": {
+    "crs": "EPSG:2950",
+    "vertical_datum": "CGVD2013(CGG2013a)",
+    "frame_id": "montreal-finalgis-mtm8-offset",
+    "origin": [
+      300619.334946641,
+      5040809.30754108,
+      19.070165634155273
+    ],
+    "axes": "east,grid_north,up",
+    "units": "metre"
+  },
+  "destination": {
+    "frame": "region_local_z_up/metre",
+    "axes": "east,north,up",
+    "region_offset": [
+      256.0,
+      256.0,
+      0.0
+    ],
+    "wgs84_anchor_lon_lat_h": [
+      -73.55350350168884,
+      45.507201203216475,
+      -12.43081833422184
+    ]
+  },
+  "pipeline": {
+    "id": "135dc2e1b7c94e2fe53bcc119531deda6e9d998e1cf4580cf385eb62dddf761b",
+    "projected_to_csrs": "EPSG:2950->EPSG:4617, normalized longitude/latitude axes",
+    "csrs_to_wgs84": "+proj=pipeline +step +proj=unitconvert +xy_in=deg +z_in=m +xy_out=rad +z_out=m +step +proj=cart +ellps=GRS80 +step +proj=helmert +x=-0.991 +y=1.9072 +z=0.5129 +rx=-0.0257899075194932 +ry=-0.0096500989602704 +rz=-0.0116599432323421 +s=0 +convention=coordinate_frame +step +inv +proj=cart +ellps=WGS84 +step +proj=unitconvert +xy_in=rad +z_in=m +xy_out=deg +z_out=m",
+    "vertical_grid_file": "/Users/wenyan/Finalverse/dev/worktrees/spatialdb-omega-xiii-3-20261119/datasets/montreal-old-port/source/geoid.tif",
+    "vertical_grid_sha256": "afa759d121a21b0321ca41985782add1a9302fb4dfd726d90a3eba157e5a49a8",
+    "vertical_formula": "h=H+N; inverse H=h-N; spatially varying geoid, no constant vertical offset"
+  },
+  "validation": {
+    "status": "derived_model",
+    "surveyed": false,
+    "datum_operation_accuracy_metres": 1,
+    "source_accuracy_metres": null,
+    "coordinate_epoch": null,
+    "limitations": [
+      "Mosaic does not resolve source coordinate epoch; no velocity/epoch correction is inferred.",
+      "Published geoid interpolation controls validate numerical implementation, not independent site survey.",
+      "No surveyed horizontal/vertical accuracy is certified; presentation-only until independent control/epoch acceptance."
+    ]
+  },
+  "provenance": {
+    "source_fwd_sha256": "20f22146d4c213d642b90968059b18bcca387db11fa03e8045dab21e1028e0db",
+    "published_geography_sha256": "17a2abc79e519ac24a981442274676171de84e377f56af50db87a5f9969c5f45",
+    "published_graph": "a2cbf7d5-4fff-5219-86a5-85e8fcde2752",
+    "published_version": "09946919b5bf53526eea44ad7938323785094f48a5aac48529aa628b544823fc",
+    "published_frame": "montreal-old-port-jacques-cartier.eus/01873c70f04efef3",
+    "geoid_license": "OGL-Canada-2.0; original SpatialDB source attribution preserved",
+    "references": [
+      "https://cdn.proj.org/",
+      "https://natural-resources.canada.ca/science-data/science-research/geomatics/geodetic-reference-systems/canadian-spatial-reference-system-csrs"
+    ]
+  },
+  "authorization": {
+    "owner": "7f6588c7-d475-4c13-9251-ad928586ac80",
+    "scope": "presentation_only",
+    "basis": "Explicit operator review of derived registration for isolated copied world; no descriptor cutover"
+  }
+}

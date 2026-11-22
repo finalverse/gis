@@ -20,5 +20,9 @@ QJsonObject fictional(const QString &output,quint32 seed);
 QJsonObject validateGlb(const QString &path);
 QJsonObject modelPlan(const QString &request,const QString &provider,const QString &model,
                       const QString &endpoint,const QString &keyFile,bool allowRemote);
+QJsonObject toolRegistry();
+QJsonObject workflowPlan(const QString &source,const QJsonObject &legacy);
+QJsonObject workflowRun(const QString &source,const QString &output,const QJsonObject &plan,const QString &approval);
 QJsonObject discover(const QString &endpoint,bool allowRemote);
+QJsonObject validateRegistration(const QString &path,const QString &geoidOverride);
 }

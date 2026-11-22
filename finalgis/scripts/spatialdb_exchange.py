@@ -5,7 +5,41 @@ This is an authored presentation publication. Its advisory navigation anchor doe
 not transform projected grid north to true ENU or establish a MutSea association.
 The exact source FWD/CRS/provenance remains hash-pinned alongside the publication.
 """
-import argparse,hashlib,json,pathlib,shutil,subprocess,time,uuid
+import argparse,hashlib,json,pathlib,re,shutil,subprocess,time,uuid
+
+def conjunctive_license(expressions):
+    """Canonicalize AND-only expressions without changing their obligations.
+
+    Preserve every original source expression in the pinned FWD. Unsupported
+    OR/WITH expressions refuse rather than being flattened or relicensed.
+    """
+    atoms=set()
+    for expression in expressions:
+        if not isinstance(expression,str) or not 0<len(expression)<=8192:
+            raise ValueError('License expression byte budget')
+        tokens=re.findall(r'[A-Za-z0-9.+-]+|[()]|\S',expression)
+        if len(tokens)>512:raise ValueError('License expression token budget')
+        index=0
+        def term(depth):
+            nonlocal index
+            if depth>24 or index>=len(tokens):raise ValueError('Invalid license expression')
+            token=tokens[index];index+=1
+            if token=='(':
+                sequence(depth+1)
+                if index>=len(tokens) or tokens[index]!=')':raise ValueError('License parentheses')
+                index+=1
+            elif re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.+-]*',token) and token not in ['AND','OR','WITH']:
+                atoms.add(token)
+            else:raise ValueError('Only conjunctive source license expressions are supported')
+        def sequence(depth):
+            nonlocal index
+            term(depth)
+            while index<len(tokens) and tokens[index]=='AND':index+=1;term(depth)
+        sequence(0)
+        if index!=len(tokens):raise ValueError('Unsupported source license operator')
+    result=' AND '.join(sorted(atoms))
+    if not result or len(result)>128:raise ValueError('Canonical license exceeds SpatialDB profile')
+    return result
 
 def run(args,cwd=None):
     p=subprocess.run(list(map(str,args)),cwd=cwd,capture_output=True,text=True,timeout=90)
@@ -26,9 +60,9 @@ def stage(definition,cas,validator,spatialdb,output,reviewed=False):
     output.mkdir(parents=True);shutil.copyfile(definition,output/'source.fwd.json');shutil.copyfile(cas/a['sha256'],output/'scene.glb')
     ns=uuid.UUID(d['definition_id']);key=hashlib.sha256(raw).hexdigest()
     uid=lambda suffix:str(uuid.uuid5(ns,suffix))
-    fictional=a['classification']=='fictional';license=' AND '.join(sorted({s['license'] for s in d['sources']}))
+    fictional=a['classification']=='fictional';license=conjunctive_license(s['license'] for s in d['sources'])
     attribution=('FinalGIS/Studio derivative. '+('Imaginary Aetheria terrain.' if fictional else 'Ville de Montréal roof/road subsets (CC BY4.0), NRCan terrain (OGL-Canada2.0). Estimated heights, colors and widths; not surveyed architecture.')+' Exact CRS and provenance: FWD SHA256 '+key+'. Anchor advisory only; no world binding.')
-    description={'schema_version':'spatialdb.authored-scene/v1','graph_id':uid('spatialdb-graph'),'root_entity_id':uid('presentation-root'),'owner_id':'alice','dataset_id':'finalgis-'+d['definition_id'],'label':'FinalGIS '+('Aetheria fictional geography' if fictional else 'Montréal derived geography')+' (authored presentation)','anchor':{'longitude':0 if fictional else -73.55350350168884,'latitude':0 if fictional else 45.507201203216475,'height_metres':0},'world_binding':None,'collision_tolerance_metres':0.1,'subtree_depth':2,'license':license,'attribution':attribution[:512],'packages':[{'id':'finalgis','path':'scene.glb','package_id':'finalgis.geography','version':str(d['version']),'license':license,'sha256':a['sha256']}],'placements':[{'name':'geography','package':'finalgis','translation':[0,0,0],'yaw_degrees':0,'scale':1}]}
+    description={'schema_version':'spatialdb.authored-scene/v1','graph_id':uid('spatialdb-graph'),'root_entity_id':uid('presentation-root'),'owner_id':'alice','dataset_id':'finalgis-'+d['definition_id'],'label':'FinalGIS '+('Aetheria fictional geography' if fictional else 'Montréal derived geography')+' (authored presentation)','anchor':{'longitude':0 if fictional else -73.55350350168884,'latitude':0 if fictional else 45.507201203216475,'height_metres':0},'world_binding':None,'collision_tolerance_metres':0.1,'subtree_depth':6,'license':license,'attribution':attribution[:512],'packages':[{'id':'finalgis','path':'scene.glb','package_id':'finalgis.geography','version':str(d['version']),'license':license,'sha256':a['sha256']}],'placements':[{'name':'geography','package':'finalgis','translation':[0,0,0],'yaw_degrees':0,'scale':1}]}
     path=output/'spatialdb-scene.json';path.write_text(json.dumps(description))
     started=time.perf_counter()
     run(['node','--max-old-space-size=256',spatialdb/'workers/authored/ingest-gltf.mjs',path,output/'ingested'])

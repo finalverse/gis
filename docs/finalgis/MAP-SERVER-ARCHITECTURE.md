@@ -1,0 +1,9 @@
+# Map service: actual MapServer backend
+
+QGIS Server was not bundled, no mapserv executable was installed, and Docker's daemon was unavailable. Instead, unmodified upstream MapServer rel-8-6-6 was cloned and built natively outside source. Its exact commit, binary digest and CMake feature set are recorded in mapserver-build-receipt.json. Two unsupported minimal-option combinations failed compilation; enabling existing libxml2 and OGCAPI resolved the build without source patches. OGCAPI is compiled, not certified here.
+
+The local adapter delegates WMS execution to this actual CGI binary. It does not implement a WMS renderer. It binds127.0.0.1 only, uses a private random bearer token, rejects MAP/path injection and unknown/duplicate query fields, bounds image size/extent/time/output/cache, and exposes a read-only catalog projected from pinned source hashes and the existing publication reference. It creates no conflicting spatial truth store.
+
+Executed coverage: WMS1.1.1 GetMap and GetCapabilities,512×512 PNG, EPSG:2950 roads/roofs,401 unauthorized,404 unknown layer,400 unsupported CRS/oversize/MAP injection, identical cached output and identical image after service restart. Three source layers are cataloged; not every raster/CRS combination was tested. Source changes invalidate access/cache via digest checks. Tests are local HTTP; production TLS, multi-tenant ACL, persistent service scaling, WFS/WMTS/vector tiles/MapCache are deferred.
+
+Rebuild from the recorded upstream tag using the configuration logs/CMakeCache in the private evidence directory. Configure prefix paths to the existing GDAL/PROJ environment and Homebrew; WITH_LIBXML2=ON and WITH_OGCAPI=ON, WITH_WMS=ON; optional protobuf/FastCGI/WFS/WCS/PostGIS/Cairo/Harfbuzz/Fribidi disabled. Run finalgis/services/map_preview.py with operator paths, published state and a NEW private output. It terminates after at most590s or its cancel sentinel. Map services never write MutSea.

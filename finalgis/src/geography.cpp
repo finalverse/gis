@@ -81,12 +81,27 @@ QByteArray glb(const std::vector<Mesh> &meshes) {
   const auto idxStart=bin.size();for(auto i:mesh.indices)append32(bin,i);
   views.append(QJsonObject{{"buffer",0},{"byteOffset",idxStart},{"byteLength",bin.size()-idxStart},{"target",34963}});
   accessors.append(QJsonObject{{"bufferView",vi+1},{"componentType",5125},{"count",qint64(mesh.indices.size())},{"type","SCALAR"}});
+  std::vector<double> normals(mesh.positions.size(),0.0);
+  for(size_t t=0;t<mesh.indices.size();t+=3){
+   const auto a=size_t(mesh.indices[t])*3,b=size_t(mesh.indices[t+1])*3,c=size_t(mesh.indices[t+2])*3;
+   std::array<double,3> u{},v{},n{};
+   for(int k=0;k<3;k++){u[k]=double(mesh.positions[b+k])-mesh.positions[a+k];v[k]=double(mesh.positions[c+k])-mesh.positions[a+k];}
+   n={u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]};
+   for(auto i:{a,b,c})for(int k=0;k<3;k++)normals[i+k]+=n[k];
+  }
+  const auto normalStart=bin.size();
+  for(size_t i=0;i<normals.size();i+=3){
+   double length=std::hypot(normals[i],normals[i+1],normals[i+2]);if(!std::isfinite(length)||length<1e-20)fgis::fail("Invalid generated surface normal");
+   for(int k=0;k<3;k++){float value=static_cast<float>(normals[i+k]/length);quint32 bits;std::memcpy(&bits,&value,4);append32(bin,bits);}
+  }
+  views.append(QJsonObject{{"buffer",0},{"byteOffset",normalStart},{"byteLength",bin.size()-normalStart},{"target",34962}});
+  accessors.append(QJsonObject{{"bufferView",vi+2},{"componentType",5126},{"count",qint64(normals.size()/3)},{"type","VEC3"}});
   const auto mi=materials.size();materials.append(QJsonObject{{"name",mesh.name},{"doubleSided",true},{"pbrMetallicRoughness",QJsonObject{{"baseColorFactor",QJsonArray{mesh.color[0],mesh.color[1],mesh.color[2],mesh.color[3]}},{"metallicFactor",0.0},{"roughnessFactor",0.85}}}});
-  modelMeshes.append(QJsonObject{{"name",mesh.name},{"primitives",QJsonArray{QJsonObject{{"attributes",QJsonObject{{"POSITION",ai}}},{"indices",ai+1},{"material",mi},{"mode",4}}}}});
+  modelMeshes.append(QJsonObject{{"name",mesh.name},{"primitives",QJsonArray{QJsonObject{{"attributes",QJsonObject{{"POSITION",ai},{"NORMAL",ai+2}}},{"indices",ai+1},{"material",mi},{"mode",4}}}}});
   nodes.append(QJsonObject{{"name",mesh.name},{"mesh",modelMeshes.size()-1}});
  }
  QJsonArray nodeIds;for(qsizetype i=0;i<nodes.size();++i)nodeIds.append(i);
- QJsonObject doc{{"asset",QJsonObject{{"version","2.0"},{"generator","FinalGIS 0.1.0"}}},{"scene",0},{"scenes",QJsonArray{QJsonObject{{"nodes",nodeIds}}}},{"nodes",nodes},{"meshes",modelMeshes},{"materials",materials},{"accessors",accessors},{"bufferViews",views},{"buffers",QJsonArray{QJsonObject{{"byteLength",bin.size()}}}}};
+ QJsonObject doc{{"asset",QJsonObject{{"version","2.0"},{"generator","FinalGIS 0.2.0"}}},{"scene",0},{"scenes",QJsonArray{QJsonObject{{"nodes",nodeIds}}}},{"nodes",nodes},{"meshes",modelMeshes},{"materials",materials},{"accessors",accessors},{"bufferViews",views},{"buffers",QJsonArray{QJsonObject{{"byteLength",bin.size()}}}}};
  auto json=QJsonDocument(doc).toJson(QJsonDocument::Compact);while(json.size()%4)json.append(' ');while(bin.size()%4)bin.append('\0');
  QByteArray result;append32(result,0x46546c67);append32(result,2);append32(result,quint32(28+json.size()+bin.size()));append32(result,quint32(json.size()));append32(result,0x4e4f534a);result+=json;append32(result,quint32(bin.size()));append32(result,0x004e4942);result+=bin;return result;
 }
@@ -212,7 +227,7 @@ QJsonObject run(const QString &source,const QString &output,const QJsonObject &p
  if(included==0||buffered==0)fail("No source geometry in selected area");
  const auto geometryNs=timer.nsecsElapsed()-importNs;auto bytes=glb({ground,houses,streets});mkdirNew(output);const auto asset=sha(bytes);writeNew(output+"/objects/"+asset,bytes);writeNew(output+"/scene.glb",bytes);
  auto validation=validateGlb(output+"/scene.glb");
- auto receipt=QJsonObject{{"schema","finalgis.workflow/1"},{"generator","FinalGIS native GDAL/PROJ/GEOS"},{"version","0.1.0"},{"mode","reality_constrained"},{"seed",0},{"dataset",metadata},{"plan",p},{"asset",validation},{"frame",QJsonObject{{"id","montreal-finalgis-mtm8-offset"},{"kind","local_cartesian"},{"crs","EPSG:2950 with CGVD2013 orthometric vertical values; projected offset"},{"units","metre"},{"axes","east,grid_north,up"},{"origin_projected",QJsonArray{originX,originY,z0}},{"geodetic_anchor",QJsonArray{-73.55350350168884,45.507201203216475}},{"model_to_frame","glTF (x,y,z) -> (x,-z,y)"}}},{"area_extent_metres",260},{"included_building_proxies",included},{"buffered_road_segments",buffered},{"corridor_sum_area_square_metres",corridorArea},{"corridor_note","Illustrative buffered centerlines; overlapping areas counted, no walkability or routing certification"},{"features",featureReceipts},{"provenance",QJsonDocument::fromJson(read(source+"/sources.json")).array()},{"attribution",QString::fromUtf8(read(source+"/ATTRIBUTION.md"))},{"accuracy_note","Roof outlines and DEM are content-pinned source-derived; flat roofs, constant 12m heights, colors and corridor widths are synthetic. No surveyed facades or validated ecological/urban simulation."},{"timings_ms",QJsonObject{{"dataset_validation",double(importNs)/1e6},{"geometry",double(geometryNs)/1e6},{"export_and_validation",double(timer.nsecsElapsed()-importNs-geometryNs)/1e6},{"total",double(timer.nsecsElapsed())/1e6}}},{"publication","offline_export_only"}};
+ auto receipt=QJsonObject{{"schema","finalgis.workflow/1"},{"generator","FinalGIS native GDAL/PROJ/GEOS"},{"version","0.2.0"},{"mode","reality_constrained"},{"seed",0},{"dataset",metadata},{"plan",p},{"asset",validation},{"frame",QJsonObject{{"id","montreal-finalgis-mtm8-offset"},{"kind","local_cartesian"},{"crs","EPSG:2950 with CGVD2013 orthometric vertical values; projected offset"},{"units","metre"},{"axes","east,grid_north,up"},{"origin_projected",QJsonArray{originX,originY,z0}},{"geodetic_anchor",QJsonArray{-73.55350350168884,45.507201203216475}},{"model_to_frame","glTF (x,y,z) -> (x,-z,y)"}}},{"area_extent_metres",260},{"included_building_proxies",included},{"buffered_road_segments",buffered},{"corridor_sum_area_square_metres",corridorArea},{"corridor_note","Illustrative buffered centerlines; overlapping areas counted, no walkability or routing certification"},{"features",featureReceipts},{"provenance",QJsonDocument::fromJson(read(source+"/sources.json")).array()},{"attribution",QString::fromUtf8(read(source+"/ATTRIBUTION.md"))},{"accuracy_note","Roof outlines and DEM are content-pinned source-derived; flat roofs, constant 12m heights, colors and corridor widths are synthetic. No surveyed facades or validated ecological/urban simulation."},{"timings_ms",QJsonObject{{"dataset_validation",double(importNs)/1e6},{"geometry",double(geometryNs)/1e6},{"export_and_validation",double(timer.nsecsElapsed()-importNs-geometryNs)/1e6},{"total",double(timer.nsecsElapsed())/1e6}}},{"publication","offline_export_only"}};
  writeNew(output+"/workflow.json",QJsonDocument(receipt).toJson(QJsonDocument::Indented));return receipt;
 }
 QJsonObject fictional(const QString &output,quint32 seed) {
@@ -222,7 +237,7 @@ QJsonObject fictional(const QString &output,quint32 seed) {
  for(int y=0;y<n-1;++y)for(int x=0;x<n-1;++x){auto a=quint32(y*n+x),b=a+1,c=a+n,d=c+1;terrain.triangle(a,b,c);terrain.triangle(b,d,c);}
  for(auto p:std::array<std::array<double,2>,4>{{{-24,-15},{24,-15},{24,15},{-24,15}}})water.vertex(p[0],p[1],4.5);
  water.triangle(0,1,2);water.triangle(0,2,3);mkdirNew(output);auto bytes=glb({terrain,water});auto asset=sha(bytes);writeNew(output+"/objects/"+asset,bytes);writeNew(output+"/scene.glb",bytes);
- auto r=QJsonObject{{"schema","finalgis.workflow/1"},{"generator","FinalGIS fictional heightfield"},{"version","0.1.0"},{"mode","fictional"},{"seed",qint64(seed)},{"asset",validateGlb(output+"/scene.glb")},{"frame",QJsonObject{{"id","aetheria-finalgis-local"},{"kind","local_cartesian"},{"crs","Aetheria arbitrary local Cartesian, no Earth ellipsoid"},{"units","metre"},{"axes","east,north,up"},{"model_to_frame","glTF (x,y,z) -> (x,-z,y)"}}},{"semantics",QJsonArray{"fictional_terrain","imaginary_lake; decorative water plane, no hydrology model"}},{"elapsed_ms",double(timer.nsecsElapsed())/1e6},{"publication","offline_export_only"}};
+ auto r=QJsonObject{{"schema","finalgis.workflow/1"},{"generator","FinalGIS fictional heightfield"},{"version","0.2.0"},{"mode","fictional"},{"seed",qint64(seed)},{"asset",validateGlb(output+"/scene.glb")},{"frame",QJsonObject{{"id","aetheria-finalgis-local"},{"kind","local_cartesian"},{"crs","Aetheria arbitrary local Cartesian, no Earth ellipsoid"},{"units","metre"},{"axes","east,north,up"},{"model_to_frame","glTF (x,y,z) -> (x,-z,y)"}}},{"semantics",QJsonArray{"fictional_terrain","imaginary_lake; decorative water plane, no hydrology model"}},{"elapsed_ms",double(timer.nsecsElapsed())/1e6},{"publication","offline_export_only"}};
  writeNew(output+"/workflow.json",QJsonDocument(r).toJson(QJsonDocument::Indented));return r;
 }
 }

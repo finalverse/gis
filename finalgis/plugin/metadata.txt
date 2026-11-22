@@ -1,7 +1,7 @@
 [general]
 name=FinalGIS
 description=Geographic Intelligence for Living Worlds — bounded native GIS and reviewed world engineering
-version=0.1.0
+version=0.3.0
 qgisMinimumVersion=3.44
 qgisMaximumVersion=4.99
 author=Finalverse
@@ -9,6 +9,6 @@ email=developers@finalverse.org
 about=FinalGIS product extension. QGIS professional GIS functionality and upstream attribution remain intact. Geographic execution uses the separate native FinalGIS worker. Models select reviewed recipes; publication requires separate authorization.
 category=Analysis
 experimental=True
-icon=logo.svg
-homepage=https://github.com/finalverse/FinalGIS
-repository=https://github.com/finalverse/FinalGIS
+icon=logo.png
+homepage=https://github.com/finalverse/gis
+repository=https://github.com/finalverse/gis

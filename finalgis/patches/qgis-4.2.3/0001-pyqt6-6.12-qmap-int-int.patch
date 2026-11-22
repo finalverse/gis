@@ -1,0 +1,19 @@
+--- a/python/PyQt6/core/conversions.sip.in	2026-11-22 21:31:52
++++ b/python/PyQt6/core/conversions.sip.in	2026-11-22 21:31:54
+@@ -2227,6 +2227,8 @@
+ %End
+ };
+ 
++// FinalGIS downstream: PyQt6 >= 6.12 (Qt >= 6.12) ships its own QMap<int, int> mapped type.
++%If (- Qt_6_12_0)
+ %MappedType QMap<int, int>
+ {
+   %TypeHeaderCode
+@@ -2304,6 +2306,7 @@
+   return sipGetState(sipTransferObj);
+   %End
+ };
++%End
+ 
+ template<TYPE1, TYPE2>
+ %MappedType QMap<TYPE1, TYPE2*>
