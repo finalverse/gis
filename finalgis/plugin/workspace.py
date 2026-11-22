@@ -128,7 +128,7 @@ class FinalGISWorkspace:
         if any(not self.config.get(k) for k in required):
             self.review.setPlainText('Publication is not configured. The generated scene remains a local export.');return
         question='Publish this exact reviewed local scene through Forge and SpatialDB?\nPlan: '+self.plan['plan_id']+'\nNo living-world mutation is authorized by this action.'
-        if QMessageBox.question(self.iface.mainWindow(),'Review geographic publication',question,QMessageBox.Yes|QMessageBox.No)!=QMessageBox.Yes:return
+        if QMessageBox.question(self.iface.mainWindow(),'Review geographic publication',question,QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
         job=str(time.monotonic_ns());out=pathlib.Path(self.config['publication_outputs'])/job
         args=[self.config['publication_adapter'],'--config',self.config['publication_config'],'--scene',str(self.last_output),'--out',str(out),'--fixture',self.config['publication_fixture_prefix']+job,'--core',self.config['publication_core'],'--approved-plan',self.plan['plan_id']]
         self.publish.setEnabled(False);self.status.setText('Publishing the reviewed geographic scene…')

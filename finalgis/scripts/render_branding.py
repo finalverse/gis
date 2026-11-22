@@ -9,10 +9,10 @@ from qgis.PyQt.QtGui import QColor, QFont, QGuiApplication, QImage, QPainter, QP
 app = QGuiApplication([])
 out = Path(sys.argv[2])
 out.mkdir(parents=True, exist_ok=True)
-image = QImage(1040, 520, QImage.Format_ARGB32)
+image = QImage(1040, 520, QImage.Format.Format_ARGB32)
 image.fill(QColor("#102337"))
 p = QPainter(image)
-p.setRenderHint(QPainter.Antialiasing)
+p.setRenderHint(QPainter.RenderHint.Antialiasing)
 p.setPen(QPen(QColor("#1d4354"), 1))
 for x in range(0, 1040, 52):
     p.drawLine(x, 0, x, 520)

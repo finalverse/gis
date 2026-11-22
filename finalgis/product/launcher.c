@@ -27,9 +27,16 @@ int main(int argc, char **argv) {
             }
     }
     char customization[PATH_MAX];
+#ifdef FINALGIS_QGIS4
+    /* QGIS 4 reads GUI customization as XML (version 1); only the splash path is set. */
+    if (snprintf(customization,sizeof(customization),"%s/finalgis-customization.xml",FINALGIS_PROFILE)>=(int)sizeof(customization))return 2;
+    FILE *f=fopen(customization,"w"); if (!f)return 2;
+    fprintf(f,"<!DOCTYPE customization>\n<Customization version=\"1\" enabled=\"true\" splashPath=\"%s/branding/\"/>\n",resource);if(fclose(f))return 2;
+#else
     if (snprintf(customization,sizeof(customization),"%s/finalgis-customization.ini",FINALGIS_PROFILE)>=(int)sizeof(customization))return 2;
     FILE *f=fopen(customization,"w"); if (!f)return 2;
     fprintf(f,"[Customization]\nsplashpath=%s/branding/\n",resource);if(fclose(f))return 2;
+#endif
     setenv("FINALGIS_CONFIG", config, 1);setenv("PROJ_NETWORK","OFF",1);
     char **args=calloc((size_t)argc+7,sizeof(char*));if(!args)return 2;
     args[0]=engine;for(int i=1;i<argc;i++)args[i]=argv[i];
