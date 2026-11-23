@@ -55,6 +55,15 @@ class FinalGISWorkspace:
         self.iface.mainWindow().setWindowIcon(QIcon(str(self.root/'logo.png')))
         from .identity import ProductIdentity
         self.identity=ProductIdentity(self);self.identity.install()
+        # Ω-XIX: optional FinalGIS Modern workspace (reversible; the full QGIS toolset stays).
+        try:
+            from .modern import ModernWorkspace
+            self.modern=ModernWorkspace(self);self.modern.install()
+        except Exception:
+            import traceback
+            err=traceback.format_exc();self.modern=None
+            pathlib.Path(os.environ.get('FINALGIS_LOG_DIR',tempfile.gettempdir()),'finalgis-modern-error.txt').write_text(err)
+            self.iface.messageBar().pushMessage('FinalGIS','Modern workspace unavailable: '+err.strip().splitlines()[-1],Qgis.MessageLevel.Warning,10)
         self.mode_changed(0)
     def show(self):self.dock.show();self.dock.raise_()
     def mode_changed(self, index):
@@ -138,5 +147,5 @@ class FinalGISWorkspace:
     def cancel_work(self):
         if self.process:self.process.kill();self.status.setText('Cancellation requested; incomplete output is not published.')
     def unload(self):
-        self.cancel_work();self.identity.uninstall();self.iface.removePluginMenu('FinalGIS',self.action);self.iface.removePluginMenu('FinalGIS',self.about)
+        self.cancel_work();self.modern and self.modern.unload();self.identity.uninstall();self.iface.removePluginMenu('FinalGIS',self.action);self.iface.removePluginMenu('FinalGIS',self.about)
         self.iface.removeToolBarIcon(self.action);self.iface.removeDockWidget(self.dock);self.iface.mainWindow().setWindowTitle(self.original_title)
